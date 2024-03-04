@@ -2,9 +2,9 @@ import pandas as pd
 import os
 import pathlib
 
-from utils import RespData
-from respShaping import respWaveShaping, respWaveGrad
-from resizeFrames import resizeFrames
+from eval.preprocess.utils import RespData
+from eval.preprocess.respShaping import respWaveShaping, respWaveGrad
+from eval.preprocess.resizeFrames import resizeFrames
 
 
 def findPath(dirName:str, dataType:RespData):
@@ -14,9 +14,7 @@ def findPath(dirName:str, dataType:RespData):
     if dataType == RespData.Abdominal:
         targetPath = dirName + '/resp_value_abdominal.tsv'
     if dataType == RespData.Movie:
-        targetPath = dirName + '/RGB/'
-    if dataType == RespData.MovieOutput:
-        targetPath = dirName + '/RGB_Resize/'
+        targetPath = dirName + '/rgb-img/'
 
     if dataType not in RespData:
         print("Datatype is not matched.")
@@ -28,14 +26,14 @@ def findPath(dirName:str, dataType:RespData):
 def CreateDateSet(dirPath, outfilePath):
     # Check if not dirPath exists
     if not os.path.isdir(dirPath):
-        print("The input directory cound not be found.")
+        print("The input directory does not exists.")
         return
     if not os.path.isdir(outfilePath):
-        print("The output directory cound not be found.")
+        print("The output directory does not exists.")
         return
 
     resizeFrames(inputDir=findPath(dirName=dirPath, dataType=RespData.Movie), \
-                 outputDir=findPath(dirName=dirPath, dataType=RespData.MovieOutput))
+                 outputDir=findPath(dirName=outfilePath, dataType=RespData.Movie))
     
     pathTmp = pathlib.Path(findPath(dirName=dirPath, dataType=RespData.Movie))
     frameNum = len([p.resolve().name for p in pathTmp.iterdir()])
@@ -56,15 +54,26 @@ def CreateDateSet(dirPath, outfilePath):
 
 
 def PreProcessing():
-    dataPath = '../../data/'
+    dataPath = './data/'
+    datasetPath = './dataset/'
+
+    if not os.path.isdir(dataPath):
+        print("Data directory does not exist. Please copy the directory from the server.")
+        quit()
+    os.makedirs(datasetPath, exist_ok=True)
+
     pathTmp = pathlib.Path(dataPath)
-    folders = [dataPath + p.resolve().name + "/" for p in pathTmp.iterdir() if p.is_dir()]
+    folders = [p.resolve().name + "/" for p in pathTmp.iterdir() if p.is_dir()]
+    folders.sort()
     for folderPath in folders:
-        print(folderPath)
-        partTmp = pathlib.Path(folderPath)
+        os.makedirs(datasetPath + folderPath, exist_ok=True)
+        partTmp = pathlib.Path(dataPath + folderPath)
+
         sessionDir = [folderPath + "/" + p.resolve().name + "/" for p in partTmp.iterdir() if p.is_dir()]
+        sessionDir.sort()
         for sessionPath in sessionDir:
-            CreateDateSet(sessionPath, sessionPath)
+            os.makedirs(datasetPath + sessionPath, exist_ok=True)
+            CreateDateSet(dataPath + sessionPath, datasetPath + sessionPath)
 
 
 if __name__ == "__main__":

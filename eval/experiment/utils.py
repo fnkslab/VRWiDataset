@@ -5,20 +5,20 @@ MOVIE_FPS = 30
 INPUT_LENGTH = 10
 
 class RespType(Enum):
-    Thoracic = 1
-    Abdominal = 2
+    Thoracic = "Tho"
+    Abdominal = "Abd"
 
 class RecordType(Enum):
-    Resting = 1,
-    Dialogue = 2
+    Resting = "Rest",
+    Dialogue = "Dial"
 
 class TrainTask(Enum):
-    Amplitude = 1,
-    Gradient = 2
+    Amplitude = "Amp",
+    Gradient = "Grad"
 
 class TrainType(Enum):
-    LeaveOneSubjectOut = 1
-    WithinSubject = 2
+    LeaveOneSubjectOut = "LOSO"
+    WithinSubject = "Within"
 
 def PearsonCorr(outputs, targets):
     x = outputs

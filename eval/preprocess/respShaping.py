@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy import signal, interpolate
 
-from utils import MOVIE_FPS
+from eval.preprocess.utils import MOVIE_FPS
 
 def standalizeData(dataArray):
     mean = dataArray.mean()
@@ -36,7 +36,7 @@ def respWaveShaping(filePath, frameNum, fmax):
 
     # Resampling
     frameInterval = 1 / MOVIE_FPS
-    resampleTime = [frameInterval*num for num in range(frameNum)]
+    resampleTime = np.array([frameInterval*num for num in range(frameNum)])
     resampleWave = record_func(resampleTime)
 
     # Low pass filter

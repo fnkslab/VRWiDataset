@@ -3,7 +3,7 @@ from tqdm import tqdm
 import os
 import pathlib
 
-from utils import RESIZE_FRAME_SIZE
+from eval.preprocess.utils import RESIZE_FRAME_SIZE
 
 def resizeImg(inputPath, outputPath):
     img = Image.open(inputPath)
@@ -17,5 +17,8 @@ def resizeFrames(inputDir, outputDir):
     os.makedirs(outputDir, exist_ok=True)
     pathTmp = pathlib.Path(inputDir)
     images = [p.resolve().name for p in pathTmp.iterdir()]
+    images.sort()
     for imageName in tqdm(images):
+        if imageName == '.gitkeep':
+            continue
         resizeImg(inputDir+imageName, outputDir+imageName)

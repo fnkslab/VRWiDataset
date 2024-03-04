@@ -8,14 +8,17 @@ import pathlib
 import torch
 import torch.utils.data as data
 
-from utils import MOVIE_FPS, INPUT_LENGTH
-from utils import RespType, RecordType, TrainTask
+from eval.experiment.utils import MOVIE_FPS, INPUT_LENGTH
+from eval.experiment.utils import RespType, RecordType, TrainTask
 
 class Dataset(data.Dataset):
     def __init__(self, dirPath:str, respType:RespType, trainTask:TrainTask, useSecs:int):
         super().__init__()
 
-        self.RGBPath = [str(p) for p in sorted(Path(dirPath).glob("**/RGB_Resize/*.jpg"))]
+        print(f"Get dataset: {dirPath}")
+
+        self.respData = pd.Series([], dtype=float)
+        self.RGBPath = [str(p) for p in sorted(Path(dirPath).glob("**/rgb-img/*.jpg"))]
 
         if trainTask == TrainTask.Amplitude:
             df_respData = pd.read_csv(dirPath + 'RespAmplitude.tsv', sep='\t').reset_index(drop=True)
@@ -29,7 +32,7 @@ class Dataset(data.Dataset):
 
         self.len = len(self.respData) - MOVIE_FPS*useSecs - 1
 
-        self.interval = MOVIE_FPS/INPUT_LENGTH*useSecs
+        self.interval = int(MOVIE_FPS/INPUT_LENGTH*useSecs)
         self.useSecs = useSecs
 
     def __len__(self):
