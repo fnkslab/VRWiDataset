@@ -35,10 +35,19 @@ For details: [Video-Based Respiratory Waveform Estimation in Dialogue: A Novel T
 │       ├── state
 │       ├── convLSTM.py
 │       └── model.py
+├── demo
+│   ├── pretrained
+│   │   ├── Amplitude_Resting_8sec.pth
+│   │   ├── Amplitude_Dialogue_7sec.pth
+│   │   ├── Gradient_Resting_4sec.pth
+│   │   └── Gradient_Dialogue_4sec.pth
+│   ├── camera.py
+│   └── video.py
 ├── .gitignore
 ├── README.md
 └── requirements.txt
 ```
+
 
 ## Data on VRWi Dataset
 The data can be downloaded from the server.
@@ -56,6 +65,7 @@ $ find ./ -type f -name "*.tgz" -exec tar -zxvf {} \;
 | resp_value_abdominal.tsv | A TSV file recording sensor values obtained from a respiratory sensor belt worn on the abdomen, along with the recording timestamps |
 | audio.wav | Audio data anonymized by cutting high-frequency components with 2*F0 |
 
+
 ## Run Experiments
 1. Clone this repository.
 ```
@@ -66,7 +76,7 @@ $ cd VRWiDataset
 2. Download data from the server.
 ```
 $ cd data
-$ wget -i urlData.txt
+$ wget -i dataURLs.txt
 $ find ./ -type f -name "*.tgz" -exec tar -zxvf {} \;
 $ cd ../
 ```
@@ -91,9 +101,32 @@ $ python -m eval.experiment.experiment \
 ```
 
 
+## Demo
+
+### Pretrained models
+Each model was trained separately on either the full resting or dialogue session data.
+Every weight file follows the naming convention `(EstimateTarget)_(RecordType)_(InputSeconds).pth` (e.g. `Amplitude_Resting_8sec.pth`).
+
+### Run demo scripts
+1. Real-time estimation with a webcam.
+```
+$ python -m demo.camera \
+    --modelPath ./demo/pretrained/Amplitude_Resting_8sec.pth \
+    --useSeconds 8
+```
+
+2. Estimation on a pre-recorded video.
+```
+$ python -m demo.video \
+    --modelPath ./demo/pretrained/Amplitude_Resting_8sec.pth \
+    --videoPath ./path/to/video.mp4 \
+    --useSeconds 8
+```
+
+
 ## License
 This dataset is licensed under a [Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) License](https://creativecommons.org/licenses/by-nc/4.0/), unless otherwise noted.
-The source code in the 'eval' folder is licensed MIT.
+The source code in the 'eval' and 'demo' folder is licensed MIT.
 
 
 ## Citation

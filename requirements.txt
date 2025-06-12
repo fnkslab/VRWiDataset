@@ -5,6 +5,7 @@ Pillow
 scikit-learn
 scipy
 tqdm
+opencv-python
 
 torch==2.2.0
 torchaudio==2.2.0
