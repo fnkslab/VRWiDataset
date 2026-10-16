@@ -1,25 +1,24 @@
 # VRWi Dataset
 
-The VRWi dataset is designed for use in Video-Based Respiratory Waveform Estimation (VRWE) tasks. 
+The VRWi dataset is designed for use in Video-Based Respiratory Waveform Estimation (VRWE) tasks.
 
-It comprises data from 30 individuals, evenly split between males and females. For each participant, the dataset includes two conditions: resting state and dialogue state. In each condition, there are face-masked video frames and respiratory waveform data from the thoracic/abdominal region. Additionally, for each face-masked video frame, the contour information of the image mask and the average RGB values within the mask are saved in RGB-FLD.txt. For the dialogue state, anonymized speech audio is also provided.
+It comprises data from 30 individuals, evenly split between males and females. For each participant, the dataset includes two conditions: resting state and dialogue state. In each condition, there are face-masked videos and respiratory waveform data from the thoracic/abdominal region. Additionally, for each face-masked video frame, the contour information of the image mask and the average RGB values within the mask are saved in RGB-FLD.txt. For the dialogue state, anonymized speech audio is also provided.
 
+The recordings are now distributed as MP4 files through **[GitHub Releases](https://github.com/fnkslab/VRWiDataset/releases/tag/data-mp4)**. (Update October 2026)
 
 For details: [Video-Based Respiratory Waveform Estimation in Dialogue: A Novel Task and Dataset for Human-Machine Interaction](https://doi.org/10.1145/3577190.3614154)
-
 
 ## Directory structure
 ```
 .
 ├── data
 │   ├── F01-15, M01-15
-│   │   └── session_resting, session_dialogue
-│   │       ├── rgb-img
-│   │       │   └── 00000.jpg-
+│   │   └── session_resting, session_dialogue(*)
+│   │       ├── video.mp4
 │   │       ├── RGB-FLD.txt
 │   │       ├── resp_value_thoracic.tsv
 │   │       ├── resp_value_abdominal.tsv
-│   │       └── audio.wav (only session_dialogue directory)
+│   │       └── audio.wav (dialogue sessions only)
 │   └── dataURLs.txt
 ├── eval
 │   ├── experiment
@@ -47,10 +46,10 @@ For details: [Video-Based Respiratory Waveform Estimation in Dialogue: A Novel T
 ├── README.md
 └── requirements.txt
 ```
-
+(*) F03, F07, and M07 have two separate dialogue sessions, stored as `session_dialogue_1` and `session_dialogue_2` instead of `session_dialogue`.
 
 ## Data on VRWi Dataset
-The data can be downloaded from the server.
+The data can be downloaded from GitHub Releases.
 ```
 $ cd data
 $ wget -i dataURLs.txt
@@ -59,12 +58,11 @@ $ find ./ -type f -name "*.tgz" -exec tar -zxvf {} \;
 
 | Data | Description |
 | -- | -- |
-| rgb-img/*.jpg | An image of a video frame with the face part masked for anonymization |
+| video.mp4 | A recording video with the face part masked for anonymization |
 | RGB-FLD.txt | A text file containing output information obtained using [OpenFace](https://github.com/TadasBaltrusaitis/OpenFace/wiki/Output-Format) and the average RGB values of the masked facial area |
 | resp_value_thoracic.tsv | A TSV file recording sensor values obtained from a respiratory sensor belt worn on the thorax, along with the recording timestamps |
 | resp_value_abdominal.tsv | A TSV file recording sensor values obtained from a respiratory sensor belt worn on the abdomen, along with the recording timestamps |
 | audio.wav | Audio data anonymized by cutting high-frequency components with 2*F0 |
-
 
 ## Run Experiments
 1. Clone this repository.
@@ -73,7 +71,7 @@ $ git clone https://github.com/fnkslab/VRWiDataset
 $ cd VRWiDataset
 ```
 
-2. Download data from the server.
+2. Download data from GitHub Releases.
 ```
 $ cd data
 $ wget -i dataURLs.txt
@@ -81,12 +79,12 @@ $ find ./ -type f -name "*.tgz" -exec tar -zxvf {} \;
 $ cd ../
 ```
 
-3. Prepare environment for Python 3.10 and install requirements.
+3. Prepare an environment for Python 3.10 and install requirements.
 ```
 $ pip install -r requirements.txt
 ```
 
-4. Preprocess data
+4. Preprocess data. This extracts and resizes MP4 frames into `dataset/<participant>/<session>/rgb-img/`, and generates the respiratory waveform targets.
 ```
 $ python -m eval.preprocess.preprocess
 ```
@@ -99,7 +97,6 @@ $ python -m eval.experiment.experiment \
     --trainType LOSO \
     --useSeconds 8
 ```
-
 
 ## Demo
 
@@ -123,11 +120,9 @@ $ python -m demo.video \
     --useSeconds 8
 ```
 
-
 ## License
 This dataset is licensed under a [Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) License](https://creativecommons.org/licenses/by-nc/4.0/), unless otherwise noted.
 The source code in the 'eval' and 'demo' folder is licensed MIT.
-
 
 ## Citation
 ```

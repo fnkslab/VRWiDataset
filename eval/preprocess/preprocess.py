@@ -4,7 +4,7 @@ import pathlib
 
 from eval.preprocess.utils import RespData
 from eval.preprocess.respShaping import respWaveShaping, respWaveGrad
-from eval.preprocess.resizeFrames import resizeFrames
+from eval.preprocess.resizeFrames import saveAllFrames
 
 
 def findPath(dirName:str, dataType:RespData):
@@ -14,6 +14,8 @@ def findPath(dirName:str, dataType:RespData):
     if dataType == RespData.Abdominal:
         targetPath = dirName + '/resp_value_abdominal.tsv'
     if dataType == RespData.Movie:
+        targetPath = dirName + '/video.mp4'
+    if dataType == RespData.MovieOutput:
         targetPath = dirName + '/rgb-img/'
 
     if dataType not in RespData:
@@ -32,11 +34,10 @@ def CreateDateSet(dirPath, outfilePath):
         print("The output directory does not exists.")
         return
 
-    resizeFrames(inputDir=findPath(dirName=dirPath, dataType=RespData.Movie), \
-                 outputDir=findPath(dirName=outfilePath, dataType=RespData.Movie))
-    
-    pathTmp = pathlib.Path(findPath(dirName=dirPath, dataType=RespData.Movie))
-    frameNum = len([p.resolve().name for p in pathTmp.iterdir()])
+    frameNum = saveAllFrames(
+        inputPath=findPath(dirName=dirPath, dataType=RespData.Movie),
+        outputDir=findPath(dirName=outfilePath, dataType=RespData.MovieOutput),
+    )
 
     respAmpTho = respWaveShaping(filePath=findPath(dirName=dirPath, dataType=RespData.Thoracic), frameNum=frameNum, fmax=1.0)
     respAmpAbd = respWaveShaping(filePath=findPath(dirName=dirPath, dataType=RespData.Abdominal), frameNum=frameNum, fmax=1.0)
@@ -58,7 +59,7 @@ def PreProcessing():
     datasetPath = './dataset/'
 
     if not os.path.isdir(dataPath):
-        print("Data directory does not exist. Please copy the directory from the server.")
+        print("Data directory does not exist. Please copy the directory from GitHub release.")
         quit()
     os.makedirs(datasetPath, exist_ok=True)
 
